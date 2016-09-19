@@ -1,0 +1,11 @@
+{
+  "name": "Collocation Dominoes",
+  "short_name": "flax-game",
+  "start_url": "index.html",
+  "display": "standalone",
+  "icons": [{
+    "src": "icon.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }]
+}

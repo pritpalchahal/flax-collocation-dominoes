@@ -1,0 +1,73 @@
+<!--
+  This template loads for the 'exercise' state (app.js)
+  draggableObjects & dropped are $scope variables created in the ExerciseCtrl controller (controllers.js)
+  The ExerciseCtrl pulls data from the Exercise service (service.js)
+  The Exercise service returns a json promise of exercise data
+-->
+<ion-view view-title="{{title}}">
+  <ion-nav-buttons side="right">
+      <button class="button button-icon ion-more" ng-click="openPopover($event)">
+      </button>
+  </ion-nav-buttons>
+  <ion-content scroll="false">
+
+        <div class="draggables container-fluid sub-header">
+          <div class="row" ng-repeat="val in drags" ng-switch on="$index % 2">
+            <div class="col drags" ng-switch-when="0" ng-drag="drags[$index].isDraggable" ng-drag-data="drags[$index].word" data-allow-transform="true" ng-drag-success="dragSuccess($data,$event,drags[$index])" press-timeout="0">
+              <div ng-class="{dragged:!drags[$index].isDraggable}">{{drags[$index].word}}</div>
+            </div>
+            <div class="col drags" ng-switch-when="0" ng-drag="drags[$index+1].isDraggable" ng-drag-data="drags[$index+1].word" data-allow-transform="true" ng-drag-success="dragSuccess($data,$event,drags[$index+1])" press-timeout="0" ng-if="drags[$index+1]">
+              <div ng-class="{dragged:!drags[$index+1].isDraggable}">{{drags[$index+1].word}}</div>
+            </div>
+        </div>
+        <ion-content class="has-header has-footer has-subheader custom-content">
+          <div class="row" ng-repeat="word in words track by $index" ng-switch on="$index % 2">
+            <div class="col" ng-switch-when="0" ng-init="word = words[$index]">
+              <div class="row">
+                <div class="fixed-value col" ng-show="word.isCorrect">
+                    {{word.left}} {{word.center}} {{word.right}}
+                </div>
+                <div ng-show="!word.isCorrect" ng-drop="isDrag($index,'left')" ng-drop-success="onDropComplete($data,$event,word.id)" class="col">
+                  <div ng-drag="isDrag($index,'left')" ng-drag-data="word.val_left" ng-drag-success="onDragSuccess($data,$event,word.id)" ng-center-anchor="{{centerAnchor}}">
+                    {{word.val_left}}
+                  </div>
+                </div>
+                <div class="center-value col" ng-show="!word.isCorrect">
+                    {{word.center}}
+                </div>
+                <div ng-show="!word.isCorrect" ng-drop="isDrag($index,'right')" ng-drop-success="onDropComplete($data,$event,word.id)" class="col">
+                  <div ng-drag="isDrag($index,'right')" ng-drag-data="word.val_right" ng-drag-success="onDragSuccess($data,$event,word.id)" ng-center-anchor="{{centerAnchor}}">
+                    {{word.val_right}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col" ng-switch-when="0" ng-init="word = words[$index+1]" ng-if="word">
+              <div class="row">
+                <div class="fixed-value col" ng-show="word.isCorrect">
+                    {{word.left}} {{word.center}} {{word.right}}
+                </div>
+                <div ng-show="!word.isCorrect" ng-drop="isDrag($index+1,'left')" ng-drop-success="onDropComplete($data,$event,word.id)" class="col">
+                  <div ng-drag="isDrag($index+1,'left')" ng-drag-data="word.val_left" ng-drag-success="onDragSuccess($data,$event,word.id)" ng-center-anchor="{{centerAnchor}}">
+                    {{word.val_left}}
+                  </div>
+                </div>
+                <div class="center-value col" ng-show="!word.isCorrect">
+                    {{word.center}}
+                </div>
+                <div ng-show="!word.isCorrect" ng-drop="isDrag($index+1,'right')" ng-drop-success="onDropComplete($data,$event,word.id)" class="col">
+                  <div ng-drag="isDrag($index+1,'right')" ng-drag-data="word.val_right" ng-drag-success="onDragSuccess($data,$event,word.id)" ng-center-anchor="{{centerAnchor}}">
+                    {{word.val_right}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ion-content>
+        <div class="bar bar-footer" ng-hide="false">
+          <div class="title check-button" ng-click="checkAnswer()">
+            Check Answer
+          </div>
+        </div>
+  </ion-content>
+</ion-view>
