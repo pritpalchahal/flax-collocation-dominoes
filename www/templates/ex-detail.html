@@ -27,13 +27,13 @@
                 <div class="fixed-value col" ng-show="word.isCorrect">
                     {{word.left}} {{word.center}} {{word.right}}
                 </div>
-                <div ng-show="!word.isCorrect" ng-drop="isActive($index,'left')" ng-drop-success="onDropComplete($data,$event,word.id,'left')" class="col" ng-drag="isActive($index,'left')" ng-drag-data="word.val_left" ng-drag-success="onDragSuccess($data,$event,word.id,'left')" ng-center-anchor="{{centerAnchor}}" ng-class="{'fixed-value':!isActive($index,'left')}">
+                <div ng-show="!word.isCorrect" ng-drop="isActive($index,'left')" ng-drop-success="onDropComplete($data,$event,word.id,'left')" class="col" ng-class="{'fixed-value':!isActive($index,'left')}" ng-click="return(word.id,'left')">
                     {{word.val_left}}
                 </div>
                 <div class="center-value col" ng-show="!word.isCorrect">
                     {{word.center}}
                 </div>
-                <div ng-show="!word.isCorrect" ng-drop="isActive($index,'right')" ng-drop-success="onDropComplete($data,$event,word.id,'right')" class="col" ng-drag="isActive($index,'right')" ng-drag-data="word.val_right" ng-drag-success="onDragSuccess($data,$event,word.id,'right')" ng-center-anchor="{{centerAnchor}}" ng-class="{'fixed-value':!isActive($index,'right')}">
+                <div ng-show="!word.isCorrect" ng-drop="isActive($index,'right')" ng-drop-success="onDropComplete($data,$event,word.id,'right')" class="col" ng-class="{'fixed-value':!isActive($index,'right')}" ng-click="return(word.id,'right')">
                     {{word.val_right}}
                 </div>
               </div>
@@ -43,13 +43,13 @@
                 <div class="fixed-value col" ng-show="word.isCorrect">
                     {{word.left}} {{word.center}} {{word.right}}
                 </div>
-                <div ng-show="!word.isCorrect" ng-drop="isActive($index+1,'left')" ng-drop-success="onDropComplete($data,$event,word.id,'left')" class="col" ng-drag="isActive($index+1,'left')" ng-drag-data="word.val_left" ng-drag-success="onDragSuccess($data,$event,word.id,'left')" ng-center-anchor="{{centerAnchor}}" ng-class="{'fixed-value':!isActive($index+1,'left')}">
+                <div ng-show="!word.isCorrect" ng-drop="isActive($index+1,'left')" ng-drop-success="onDropComplete($data,$event,word.id,'left')" class="col" ng-class="{'fixed-value':!isActive($index+1,'left')}" ng-click="return(word.id,'left')">
                     {{word.val_left}}
                 </div>
                 <div class="center-value col" ng-show="!word.isCorrect">
                     {{word.center}}
                 </div>
-                <div ng-show="!word.isCorrect" ng-drop="isActive($index+1,'right')" ng-drop-success="onDropComplete($data,$event,word.id,'right')" class="col" ng-drag="isActive($index+1,'right')" ng-drag-data="word.val_right" ng-drag-success="onDragSuccess($data,$event,word.id,'right')" ng-center-anchor="{{centerAnchor}}" ng-class="{'fixed-value':!isActive($index+1,'right')}">
+                <div ng-show="!word.isCorrect" ng-drop="isActive($index+1,'right')" ng-drop-success="onDropComplete($data,$event,word.id,'right')" class="col" ng-class="{'fixed-value':!isActive($index+1,'right')}" ng-click="return(word.id,'right')">
                     {{word.val_right}}
                 </div>
               </div>

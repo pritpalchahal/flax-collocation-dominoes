@@ -319,6 +319,31 @@ angular.module('collocationdominoes.controllers', [])
     return true;
   }
 
+  $scope.return = function(wordId,place){
+    var data;
+    var index = $scope.words.findIndex(x => x.id == wordId);
+    if(place == "left"){
+      if(index == 0){return;}
+      if($scope.words[index].isCorrect || $scope.words[index-1].isCorrect){return;}
+      data = $scope.words[index].val_left;
+      if(data == ""){return;}
+      $scope.words[index].val_left = "";
+      $scope.words[index-1].val_right = "";
+    }
+    else{
+      if(index == $scope.words.length-1){return;}
+      if($scope.words[index].isCorrect || $scope.words[index+1].isCorrect){return;}
+      data = $scope.words[index].val_right;
+      if(data == ""){return;}
+      $scope.words[index].val_right = "";
+      $scope.words[index+1].val_left = "";
+    }
+    var dragIndex = $scope.drags.findIndex(x => x.word == data);
+    if(dragIndex != -1){
+      $scope.drags[dragIndex].isDraggable = true;
+    }
+  }
+
   $scope.checkAnswer = function(){
     if(!checkAll()){
       ionicToast.show('Answer Incorrect!','middle',false,2500);
