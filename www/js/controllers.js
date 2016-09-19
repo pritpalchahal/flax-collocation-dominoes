@@ -239,7 +239,6 @@ angular.module('collocationdominoes.controllers', [])
 
 .controller('ExerciseCtrl', function($scope, $stateParams, $ionicLoading, $ionicPopup, $ionicPopover,$filter, $timeout,
   ionicToast, Ids, SummaryData, Data, $rootScope) {
-  $scope.slideIndex = 0;//index of initial slide
   $scope.hide = false;
 
   $rootScope.show();
@@ -300,14 +299,20 @@ angular.module('collocationdominoes.controllers', [])
 
   $scope.title = Data.getExTitle(collId,$stateParams.exerciseId);
 
-  $scope.isDrag = function(index,place){
-    if(index == $scope.words.length-1){
-      if(place == "right"){
+  $scope.isActive = function(index,place){
+    if(place == "right"){
+      if(index == $scope.words.length-1){
+        return false;
+      }
+      if($scope.words[index+1].isCorrect){
         return false;
       }
     }
-    if(index == 0){
-      if(place == "left"){
+    if(place == "left"){
+      if(index == 0){
+        return false;
+      }
+      if($scope.words[index-1].isCorrect){
         return false;
       }
     }
@@ -321,78 +326,68 @@ angular.module('collocationdominoes.controllers', [])
   }
 
   checkAll = function(){
-    var all_words = 0, correct_words = 0;
+    var correct_words = 0;
     for(var i=0; i<$scope.words.length;i++){
       var word = $scope.words[i];
-      if(word[$scope.slideIndex]){
-        all_words++;
-        SummaryData.createSummary(collId,exId);
-        $scope.hide = false;
-        //it is critical to check for word[slideIndex]
-        //because slideIndex can be different 
-        if(word[$scope.slideIndex] && word[$scope.slideIndex].isCorrect){
-          correct_words++;
+      SummaryData.createSummary(collId,exId);
+      if(word.isCorrect){
+        correct_words++;
+      }
+    }
+    if($scope.words.length == correct_words){
+      $scope.hide = true;
+    }
+    else{
+      $scope.hide = false;
+    }
+    return $scope.hide;
+  }
+
+  $scope.dragSuccess = function(data,evt,index){
+    $scope.drags[index].isDraggable = false;
+  }
+  $scope.onDragSuccess = function(data,evt,wordId,place){
+    for(var i=0;i<$scope.words.length;i++){
+      var word = $scope.words[i];
+      if(word.id == wordId){
+        if(place == "left"){
+          $scope.words[i].val_left = "";
+          $scope.words[i-1].val_right = "";
+        }
+        else{
+          $scope.words[i].val_right = "";
+          $scope.words[i+1].val_left = "";
         }
       }
     }
-    if(all_words == correct_words){
-      $scope.hide = true;
-      return true;
-    }
-    $scope.hide = false;
-    return false;
   }
-
-  $scope.$on("$ionicSlides.sliderInitialized", function(event, data){
-    // data.slider is the instance of Swiper
-    $scope.slideIndex = data.slider.activeIndex;
-    if($scope.words){
-      checkAll();
-      $scope.$apply();//required to update the view
-    }
-  });
-
-  $scope.$on("$ionicSlides.slideChangeStart", function(event, data){
-    $scope.slideIndex = data.slider.activeIndex;
-    checkAll();
-    $scope.$apply();//required to update the view
-  });
-
-  $scope.$on("$ionicSlides.slideChangeEnd", function(event, data){
-    // note: the indexes are 0-based
-    // $scope.activeIndex = data.activeIndex;
-    // $scope.previousIndex = data.previousIndex;
-  });
-  $scope.dragSuccess = function(data,evt,index,slideIndex){
-    $scope.words[index][slideIndex].isDraggable = false;
-  }
-  $scope.onDragSuccess = function(data,evt,wordId,slideIndex){
-    for(var i=0;i<$scope.words.length;i++){
-      var word = $scope.words[i];
-      if(word[slideIndex] && (word[slideIndex].id == wordId)){
-        $scope.words[i][slideIndex].drop = "";
-      }
-    }
-  }
-  $scope.onDropComplete = function(data,evt,wordId,slideIndex){
+  $scope.onDropComplete = function(data,evt,wordId,place){
+    var dataIndex = $scope.drags.findIndex(x => x.word == data);
     var done = null;
     for(var i=0;i<$scope.words.length;i++){
       var word = $scope.words[i];
-      if(word[slideIndex] && (word[slideIndex].id == wordId)){
-        var value = $scope.words[i][slideIndex].drop;
-        if(value != data){
-          $scope.words[i][slideIndex].drop = data;
-          done = value;
+      if(word.id == wordId){
+        if(place == "left"){
+          var value = $scope.words[i].val_left;
+          // if(value != data){
+            $scope.words[i].val_left = data;
+            $scope.words[i-1].val_right = data;
+            done = value;
+          // }
+        }
+        else{
+          var value = $scope.words[i].val_right;
+          // if(value != data){
+            $scope.words[i].val_right = data;
+            $scope.words[i+1].val_left = data;
+            done = value;
+          // }
         }
       }
     }
     if(done){
-      for(var i=0;i<$scope.words.length;i++){
-        var word = $scope.words[i];
-        if(word[slideIndex] && (word[slideIndex].right == done)){
-          word[slideIndex].isDraggable = true;
-        }
-      }
+      var index = $scope.drags.findIndex(x => x.word == done);
+      $scope.drags[index].isDraggable = true;
     }
     checkAll();
   }
@@ -409,21 +404,18 @@ angular.module('collocationdominoes.controllers', [])
 
   $scope.showSummary = function(){
     var score = 0;
+    for(var i=0;i<$scope.words.length;i++){
+      var word = $scope.words[i];
+      if(word.isCorrect){
+        score++;
+      }
+    }
     SummaryData.updateScore(collId,exId,score);
     var alertPopup = $ionicPopup.alert({
       scope: $scope,
       title: 'Summary report',
       templateUrl: 'templates/summary.html'
     });
-
-    alertPopup.then(function(response){
-      //custom functionality
-    });
-
-    //close popup after 3 seconds
-    // $timeout(function(){
-    //   alertPopup.close();
-    // }, 5000);
   }
 
   $scope.restartGame = function(){
@@ -446,10 +438,11 @@ angular.module('collocationdominoes.controllers', [])
         //clear view
         for(var i=0;i<$scope.words.length;i++){
           var word = $scope.words[i];
-          for(var j=0;j<word.length;j++){
-            word[j].drop = "";
-            word[j].isDraggable = true;
-          }
+          word.val_left = "";
+          word.val_right = "";
+        }
+        for(var i=0;i<$scope.drags.length;i++){
+          $scope.drags[i].isDraggable = true;
         }
 
         //update summary
