@@ -97,14 +97,16 @@ popover-style{
     /*min-width: 50px;*/
 }
 .center-value{
-  background-color: #B8EBBF;
+  background-color: #A0CCA6;
   border: solid 1px black;
+  margin:1px;
   color:black;
   text-align: center;
   font-size: 12px;
   display: block;
   position: relative;
-  max-width: 25px;
+  max-width: 18%;
+  min-width: 18%;
   min-height:32px;
 }
 [ng-drop]{
@@ -117,8 +119,10 @@ popover-style{
     position: relative;
 }
 .drags{
-  border: 1px solid black;
-  margin: 1px;
+  /*border: 1px solid black;*/
+  /*background-color: grey;*/
+  text-align: center;
+  margin: 5px;
 }
 
 [ng-drag].drag-over{
@@ -307,15 +311,27 @@ table tr:nth-child(even) {
 }
 .text{
     font-size:12px;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -moz-hyphens:auto;
+    -ms-hyphens:auto;
+    hyphens: auto;
+}
+.text.col{
+  min-width: 40%;
 }
 .row {
     display: flex; /* equal height of the children */
     flex-wrap: wrap;
     align-content: center;
     -webkit-align-content:center;
+    padding: 2px 0px;
 }
 .col{
-    flex: 0 0 100% 100%;
+    /*flex: 0 0 100% 100%;*/
+    /*flex-wrap: wrap;*/
      /* additionally, equal width */
     /*padding: 1em;
     border: solid;

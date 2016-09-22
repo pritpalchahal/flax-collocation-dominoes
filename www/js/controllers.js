@@ -63,7 +63,7 @@ angular.module('collocationdominoes.controllers', [])
     getData(false);
   }
   else{
-    ionicToast.show("Not online",'middle',false,2500);
+    ionicToast.show(Data.getErrorMsg(),'middle',false,2500);
   }
 
   $scope.doRefresh = function(){
@@ -71,7 +71,7 @@ angular.module('collocationdominoes.controllers', [])
       getData(true);
     }
     else{
-      ionicToast.show("Not online",'middle',false,2500);
+      ionicToast.show(Data.getErrorMsg(),'middle',false,2500);
     }
     $scope.$broadcast('scroll.refreshComplete'); 
   };
@@ -112,12 +112,13 @@ angular.module('collocationdominoes.controllers', [])
 })
 
 .controller('ExsCtrl', function($scope, $timeout, $stateParams, $ionicPopup, $ionicPopover, $rootScope,
-  Ids, StateData, SummaryData, Data, ionicToast,$ionicLoading,$ionicListDelegate) {
+  Ids, StateData, SummaryData, Data, ionicToast,$ionicLoading,$ionicListDelegate,DragData) {
   
   var name = $stateParams.collectionName;
   $scope.collectionName = name;
 
   var collId = Ids.getCollId($scope.collectionName);
+  DragData.createColl(collId);
 
   var desc = Data.getDesc();
   desc.forEach(function(val){
@@ -184,17 +185,20 @@ angular.module('collocationdominoes.controllers', [])
 
   $scope.doRestart = function(ex){
     var exId = Ids.getExId(collId,ex);
+
     SummaryData.clearSummary(collId,exId);
     StateData.updateState(collId,exId,"New");
     $ionicListDelegate.closeOptionButtons();
+
     var words = Data.getWords(collId,exId);
     for(var i=0;i<words.length;i++){
       var word = words[i];
-      for(var j=0;j<word.length;j++){
-        word[j].drop = "";
-        word[j].isDraggable = true;
-      }
+      word.val_left = "";
+      word.val_right = "";
     }
+    words[0].val_left = words[0].left;
+    words[words.length-1].val_right = words[words.length-1].right;
+    DragData.clear(collId,exId);
   }
 
   //use this method to refresh data
@@ -238,7 +242,7 @@ angular.module('collocationdominoes.controllers', [])
 })
 
 .controller('ExerciseCtrl', function($scope, $stateParams, $ionicLoading, $ionicPopup, $ionicPopover,$filter, $timeout,
-  ionicToast, Ids, SummaryData, Data, $rootScope) {
+  ionicToast, Ids, SummaryData, Data, $rootScope, DragData, StateData) {
   $scope.hide = false;
 
   $rootScope.show();
@@ -253,6 +257,10 @@ angular.module('collocationdominoes.controllers', [])
     var time = new Date();
     var timeNow = $filter('date')(time,'medium');//angularjs date format
     SummaryData.updateStartTime(collId,exId,timeNow);
+  }
+
+  if(StateData.getSingleState(collId,exId) == "Complete"){
+    $scope.hide = true;
   }
 
   //Fisher-Yates shuffle
@@ -283,17 +291,17 @@ angular.module('collocationdominoes.controllers', [])
     }
     $scope.words = response;
     console.log($scope.words);
-    var tmp = [];
-    for(var i=0;i<$scope.words.length-1;i++){
-      obj = {"word":$scope.words[i].right,"isDraggable":true};
-      tmp.push(obj);
-      if(i==0){$scope.words[i].val_left = $scope.words[i].left;}
-      if(i+1==$scope.words.length-1){$scope.words[i+1].val_right = $scope.words[i+1].right;}
+    if($scope.words.length == 0){
+      return;
     }
-    $scope.drags = shuffle(tmp);
-    console.log($scope.drags);
+    $scope.words[0].val_left = $scope.words[0].left;
+    $scope.words[$scope.words.length-1].val_right = $scope.words[$scope.words.length-1].right;
 
-  }).then(function(){//finally creates problems here
+    DragData.createDrags(collId,exId);
+    $scope.drags = shuffle(DragData.getDrags(collId,exId));
+    // console.log($scope.drags);
+
+  }).then(function(){//use of keyword 'finally' creates problems here
     $rootScope.hide();
   });
 
@@ -359,8 +367,10 @@ angular.module('collocationdominoes.controllers', [])
         correct_words++;
       }
     }
+    SummaryData.updateScore(collId,exId,correct_words);
     if($scope.words.length == correct_words){
       $scope.hide = true;
+      ionicToast.show('Well done!','middle',false,2500);
     }
     else{
       $scope.hide = false;
@@ -368,23 +378,8 @@ angular.module('collocationdominoes.controllers', [])
     return $scope.hide;
   }
 
-  $scope.dragSuccess = function(data,evt,index){
+  $scope.onDragSuccess = function(data,evt,index){
     $scope.drags[index].isDraggable = false;
-  }
-  $scope.onDragSuccess = function(data,evt,wordId,place){
-    for(var i=0;i<$scope.words.length;i++){
-      var word = $scope.words[i];
-      if(word.id == wordId){
-        if(place == "left"){
-          $scope.words[i].val_left = "";
-          $scope.words[i-1].val_right = "";
-        }
-        else{
-          $scope.words[i].val_right = "";
-          $scope.words[i+1].val_left = "";
-        }
-      }
-    }
   }
   $scope.onDropComplete = function(data,evt,wordId,place){
     var dataIndex = $scope.drags.findIndex(x => x.word == data);
@@ -394,19 +389,15 @@ angular.module('collocationdominoes.controllers', [])
       if(word.id == wordId){
         if(place == "left"){
           var value = $scope.words[i].val_left;
-          // if(value != data){
-            $scope.words[i].val_left = data;
-            $scope.words[i-1].val_right = data;
-            done = value;
-          // }
+          $scope.words[i].val_left = data;
+          $scope.words[i-1].val_right = data;
+          done = value;
         }
         else{
           var value = $scope.words[i].val_right;
-          // if(value != data){
-            $scope.words[i].val_right = data;
-            $scope.words[i+1].val_left = data;
-            done = value;
-          // }
+          $scope.words[i].val_right = data;
+          $scope.words[i+1].val_left = data;
+          done = value;
         }
       }
     }
@@ -428,14 +419,6 @@ angular.module('collocationdominoes.controllers', [])
   }
 
   $scope.showSummary = function(){
-    var score = 0;
-    for(var i=0;i<$scope.words.length;i++){
-      var word = $scope.words[i];
-      if(word.isCorrect){
-        score++;
-      }
-    }
-    SummaryData.updateScore(collId,exId,score);
     var alertPopup = $ionicPopup.alert({
       scope: $scope,
       title: 'Summary report',
@@ -466,6 +449,8 @@ angular.module('collocationdominoes.controllers', [])
           word.val_left = "";
           word.val_right = "";
         }
+        $scope.words[0].val_left = $scope.words[0].left;
+        $scope.words[$scope.words.length-1].val_right = $scope.words[$scope.words.length-1].right;
         for(var i=0;i<$scope.drags.length;i++){
           $scope.drags[i].isDraggable = true;
         }

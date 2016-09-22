@@ -366,6 +366,47 @@ angular.module('collocationdominoes.services', [])
   };
 })
 
+.factory('DragData',function(Data){
+  var drags = [];
+
+  var createColl = function(collId){
+    if(!drags[collId]){
+      drags[collId] = [];
+    }
+  }
+
+  var createDrags = function(collId,exId){
+    if(drags[collId][exId]){return;}
+    drags[collId][exId] = [];
+    var words = Data.getWords(collId,exId);
+    if(words){
+      for(var i=0;i<words.length-1;i++){
+        obj = {"word":words[i].right,"isDraggable":true};
+        drags[collId][exId].push(obj);
+      }
+    }
+  }
+
+  var getDrags = function(collId,exId){
+    if(drags[collId][exId]){
+      console.log(drags[collId][exId]);
+      return drags[collId][exId];
+    }
+    return null;
+  }
+
+  var clear = function(collId,exId){
+    drags[collId].splice(exId,1);
+  }
+
+  return{
+    createColl:createColl,
+    createDrags: createDrags,
+    getDrags: getDrags,
+    clear:clear
+  }
+})
+
 .factory('Ids',function($cordovaNetwork,$rootScope){
   var collIds = [];
   var exIds = [];

@@ -77,11 +77,12 @@ angular.module('collocationdominoes', ['ionic', 'collocationdominoes.controllers
       if(currentState != "exercise"){
         return;
       }
-    
+
       var exerciseId = $stateParams.exerciseId;
       var name = $stateParams.collectionName;
       var collId = Ids.getCollId(name);
       var exId = Ids.getExId(collId,exerciseId);
+      var words = Data.getWords(collId,exId);
 
       //update end time
       if(StateData.getSingleState(collId,exId) != "Complete"){
@@ -90,10 +91,7 @@ angular.module('collocationdominoes', ['ionic', 'collocationdominoes.controllers
         SummaryData.updateEndTime(collId,exId,timeNow);
       }
 
-      var totalSlides = Data.getSlidesCount(collId,exId);
-      if(totalSlides == 0){return;}
-
-      if(SummaryData.getSummary(collId,exId).score == totalSlides){
+      if(SummaryData.getSummary(collId,exId).score == words.length){
         StateData.updateState(collId,exId,"Complete");
       }
       else{
