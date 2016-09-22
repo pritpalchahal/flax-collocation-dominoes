@@ -1,7 +1,7 @@
 {
   "name": "Collocation Dominoes",
   "version": "1.1.1",
-  "description": "Related Words: An Ionic project for flax language learning system",
+  "description": "Collocation Dominoes: An Ionic project for flax language learning system",
   "dependencies": {
     "gulp": "^3.5.6",
     "gulp-sass": "^2.0.4",

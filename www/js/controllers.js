@@ -290,8 +290,7 @@ angular.module('collocationdominoes.controllers', [])
       return;
     }
     $scope.words = response;
-    console.log($scope.words);
-    if($scope.words.length == 0){
+    if($scope.words.length == 0){//critical check
       return;
     }
     $scope.words[0].val_left = $scope.words[0].left;

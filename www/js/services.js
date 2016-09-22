@@ -389,7 +389,6 @@ angular.module('collocationdominoes.services', [])
 
   var getDrags = function(collId,exId){
     if(drags[collId][exId]){
-      console.log(drags[collId][exId]);
       return drags[collId][exId];
     }
     return null;
