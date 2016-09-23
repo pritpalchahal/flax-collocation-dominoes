@@ -328,7 +328,13 @@ angular.module('collocationdominoes.controllers', [])
 
   $scope.return = function(wordId,place){
     var data;
-    var index = $scope.words.findIndex(x => x.id == wordId);
+    // var index = $scope.words.findIndex(x => x.id == wordId);
+    var index = -1;
+    for(var i=0;i<$scope.words.length;i++){
+      if($scope.words[i].id == wordId){
+        index = i;
+      }
+    }
     if(place == "left"){
       if(index == 0){return;}
       if($scope.words[index].isCorrect || $scope.words[index-1].isCorrect){return;}
@@ -345,7 +351,13 @@ angular.module('collocationdominoes.controllers', [])
       $scope.words[index].val_right = "";
       $scope.words[index+1].val_left = "";
     }
-    var dragIndex = $scope.drags.findIndex(x => x.word == data);
+    // var dragIndex = $scope.drags.findIndex(x => x.word == data);
+    var dragIndex = -1;
+    for(var i=0;i<$scope.drags.length;i++){
+      if($scope.drags[i].word == data){
+        dragIndex = i;
+      }
+    }
     if(dragIndex != -1){
       $scope.drags[dragIndex].isDraggable = true;
     }
@@ -381,7 +393,6 @@ angular.module('collocationdominoes.controllers', [])
     $scope.drags[index].isDraggable = false;
   }
   $scope.onDropComplete = function(data,evt,wordId,place){
-    var dataIndex = $scope.drags.findIndex(x => x.word == data);
     var done = null;
     for(var i=0;i<$scope.words.length;i++){
       var word = $scope.words[i];
@@ -401,7 +412,13 @@ angular.module('collocationdominoes.controllers', [])
       }
     }
     if(done){
-      var index = $scope.drags.findIndex(x => x.word == done);
+      // var index = $scope.drags.findIndex(x => x.word == done);
+      var index = -1;
+      for(var i=0;i<$scope.drags.length;i++){
+        if($scope.drags[i].word == data){
+          index = i;
+        }
+      }
       $scope.drags[index].isDraggable = true;
     }
     checkAll();
