@@ -412,14 +412,11 @@ angular.module('collocationdominoes.controllers', [])
       }
     }
     if(done){
-      // var index = $scope.drags.findIndex(x => x.word == done);
-      var index = -1;
       for(var i=0;i<$scope.drags.length;i++){
-        if($scope.drags[i].word == data){
-          index = i;
+        if($scope.drags[i].word == done){
+          $scope.drags[i].isDraggable = true;
         }
       }
-      $scope.drags[index].isDraggable = true;
     }
     checkAll();
   }
