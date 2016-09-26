@@ -23,7 +23,7 @@
         <ion-content class="has-header has-footer has-subheader custom-content">
           <div class="row" ng-repeat="word in words track by $index" ng-switch on="$index % 2">
             <div class="col" ng-switch-when="0" ng-init="word = words[$index]">
-              <div class=" text row">
+              <div class="row">
                 <div class="fixed-value col" ng-show="word.isCorrect">
                     {{word.left}} {{word.center}} {{word.right}}
                 </div>
@@ -39,7 +39,7 @@
               </div>
             </div>
             <div  ng-if="words[$index+1]" class="col" ng-switch-when="0" ng-init="word = words[$index+1]">
-              <div class=" text row">
+              <div class="row">
                 <div class="fixed-value col" ng-show="word.isCorrect">
                     {{word.left}} {{word.center}} {{word.right}}
                 </div>
