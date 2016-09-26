@@ -381,7 +381,7 @@ angular.module('collocationdominoes.controllers', [])
     SummaryData.updateScore(collId,exId,correct_words);
     if($scope.words.length == correct_words){
       $scope.hide = true;
-      ionicToast.show('Well done!','middle',false,2500);
+      ionicToast.show('Well done!','bottom',false,2000);
     }
     else{
       $scope.hide = false;
