@@ -298,7 +298,6 @@ angular.module('collocationdominoes.controllers', [])
 
     DragData.createDrags(collId,exId);
     $scope.drags = shuffle(DragData.getDrags(collId,exId));
-    // console.log($scope.drags);
 
   }).then(function(){//use of keyword 'finally' creates problems here
     $rootScope.hide();

@@ -11,7 +11,7 @@
   </ion-nav-buttons>
   <ion-content scroll="false">
 
-        <div class="draggables container-fluid sub-header">
+        <div class="draggables">
           <div class="row" ng-repeat="val in drags" ng-switch on="$index % 2">
             <div class="drags col" ng-switch-when="0" ng-drag="drags[$index].isDraggable" ng-drag-data="drags[$index].word" data-allow-transform="true" ng-drag-success="onDragSuccess($data,$event,$index)" press-timeout="0">
               <div ng-class="{dragged:!drags[$index].isDraggable}">{{drags[$index].word}}</div>
@@ -19,8 +19,10 @@
             <div class="drags col" ng-switch-when="0" ng-drag="drags[$index+1].isDraggable" ng-drag-data="drags[$index+1].word" data-allow-transform="true" ng-drag-success="onDragSuccess($data,$event,$index+1)" press-timeout="0" ng-if="drags[$index+1]">
               <div ng-class="{dragged:!drags[$index+1].isDraggable}">{{drags[$index+1].word}}</div>
             </div>
+          </div>
         </div>
-        <ion-content class="has-header has-footer has-subheader custom-content">
+
+        <ion-content class="has-header has-footer" ng-style="{'margin-top':(drags.length / 2)*20+'px'}">
           <div class="row" ng-repeat="word in words track by $index" ng-switch on="$index % 2">
             <div class="col" ng-switch-when="0" ng-init="word = words[$index]">
               <div class="row">
