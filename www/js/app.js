@@ -45,6 +45,13 @@ angular.module('collocationdominoes', ['ionic', 'collocationdominoes.controllers
     $ionicLoading.hide();
   }
 
+  //ionic.Platform 
+  var isIOS = ionic.Platform.isIOS();
+  var isAndroid = ionic.Platform.isAndroid();
+  var isWindowsPhone = ionic.Platform.isWindowsPhone();
+
+  console.log(isAndroid);
+
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -62,6 +69,10 @@ angular.module('collocationdominoes', ['ionic', 'collocationdominoes.controllers
       StatusBar.styleDefault();
     }
   });
+
+  if(!isAndroid && !isWindowsPhone){
+    return;
+  }
 
   $ionicPlatform.registerBackButtonAction(function (event){
     var currentState = $ionicHistory.currentStateName();
@@ -110,9 +121,11 @@ angular.module('collocationdominoes', ['ionic', 'collocationdominoes.controllers
   //to override default behaviors of specific platforms (android,ios etc)
   //e.g. android align its titles to left by default, so needs to change it here
   //refer to docs http://ionicframework.com/docs/api/provider/$ionicConfigProvider/
-  $ionicConfigProvider.navBar.alignTitle('center');
-  $ionicConfigProvider.backButton.text("");
-  $ionicConfigProvider.backButton.icon('my-back-button');
+  if(ionic.Platform.isAndroid()){
+    $ionicConfigProvider.navBar.alignTitle('center');
+    $ionicConfigProvider.backButton.text("");
+    $ionicConfigProvider.backButton.icon('my-back-button');
+  }
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router

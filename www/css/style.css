@@ -1,19 +1,4 @@
 /*
-*=== CUSTOM STYLING OF SLIDE BULLETS (BOTTOM OF PAGE) ===
-*/
-.swiper-pagination-bullet {
-    /*width: 15px;
-    height: 15px;*/
-    color:#000;
-    opacity: 1;
-    background: rgba(0,0,0,0.2);
-}
-.swiper-pagination-bullet-active {
-    color:#fff;
-    background: #3F9200;
-}
-
-/*
 *=== POPOVERS ===
 */
 .pop-image{
@@ -69,7 +54,7 @@ popover-style{
   border-bottom: 2px solid #3F9200;
 
 }
-/*.draggables::after{
+/*.draggables:after{
   display: block;
   content: "";
   clear: both;
@@ -121,12 +106,14 @@ popover-style{
     display: block;
     margin:0 0px;
     position: relative;
-}
-.drags{
-  /*border: 1px solid black;*/
-  /*background-color: white;*/
-  /*text-align: center;*/
-  /*margin: 4px;*/
+
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -moz-hyphens:auto;
+    -ms-hyphens:auto;
+    hyphens: auto;
 }
 
 [ng-drag].drag-over{
@@ -245,23 +232,12 @@ li{
 .popup-buttons .button{
   /*font-style: oblique; !important;*/
   border-color: #3F9200;
-  background-color: #64906A;
+  background-color: #82AE88;
   /*color: red;*/
 }
 .popup-buttons .button.activated{
   background-color: #6E9A74;
 }
-/*
-.popup-buttons .button-positive{
-  font-style: italic !important;
-  margin-left: 0px !important;
-  border-radius: 0px !important;
-}
-.popup-buttons .button-default{
-  font-style: italic !important;
-  margin-right: 0px !important;
-  border-radius: 0px !important;
-}*/
 
 /* 
 *=== SUMMARY TABLES ===
@@ -300,13 +276,6 @@ table tr:nth-child(even) {
 .bar.bar-footer{
   border-top: solid 2px #3F9200;
 }
-.slideNo{
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  font-size: 12px;
-  padding-left:5px;
-}
 .my-back-button{
   content: url('../img/back-image.jpg');
   width:55px;
@@ -323,12 +292,6 @@ table tr:nth-child(even) {
 }
 .text.col{
   min-width: 40%;
-}
-.text.col.left{
-
-}
-.text.col.right{
-
 }
 .row {
     display: flex; /* equal height of the children */

@@ -74,7 +74,7 @@ angular.module('collocationdominoes.services', [])
 
     return getAll(isRefreshing).then(function(response){
       response.forEach(function(collectionName){
-        promises.push(isEmpty(collectionName));
+        promises.push(checkIfEmpty(collectionName));
       });
       return $q.all(promises).then(function(values) {
         values.forEach(function(value){
@@ -87,7 +87,7 @@ angular.module('collocationdominoes.services', [])
     });
   }
 
-  var isEmpty = function(collectionName){
+  var checkIfEmpty = function(collectionName){
     var suffix_url = TEMPLATE_URL_WITH_ACTIVITY.replace("CCCC",collectionName);
     var coll_url = PREFIX_URL + suffix_url;
 
@@ -97,9 +97,10 @@ angular.module('collocationdominoes.services', [])
       if(!data || !data.response){return;}
       var collection_name = data.response._from;
 
-      //only "password" has more than one category
       var ex = data.response.categoryList.category;
+      //some collections has more than one category
       if(ex.length > 0 || ex.exercise){
+        //return this collection if not empty
         return collection_name;
       }
     });
