@@ -23,14 +23,9 @@ angular.module('collocationdominoes.services', [])
   var words = [];
   var draggables = [];
 
-  var getAll = function(isRefreshing){
-    if(collections.length > 0 && !isRefreshing){
-      return new Promise(function(resolve){
-        return resolve(temp_collections);
-      });
-    }
+  var getAll = function(){
     var temp_collections = [];
-    var promise = $http.get(ALL_COLLECTIONS_URL).then(function(response){
+    var promise = $http.get(ALL_COLLECTIONS_URL,{timeout:$rootScope.timeout}).then(function(response){
       var x2js = new X2JS();
       var jsonData = x2js.xml_str2json(response.data);
       var collectionList = jsonData.page.pageResponse.collectionList.collection;
@@ -69,19 +64,35 @@ angular.module('collocationdominoes.services', [])
   }
 
   var getAllColls = function(isRefreshing){
-    collections = [];
     promises = [];
 
-    return getAll(isRefreshing).then(function(response){
+    return getAll().then(function(response){
+      if(response.status == 404 || response.status == -1){
+        return response;
+      }
+      var temp_collections = [];
       response.forEach(function(collectionName){
         promises.push(checkIfEmpty(collectionName));
       });
       return $q.all(promises).then(function(values) {
         values.forEach(function(value){
-          if(value){
-            collections.push(value);
+          if(value && value.status != 404 && value.status != -1){//ignore erroneous values
+            temp_collections.push(value);
           }
         });
+        //if user if refreshing and due to server error, new collections retrieved
+        //are less than previously retrieved, then simply return previously retrieved
+        if(isRefreshing){
+          if(collections.length <= temp_collections.length){
+            collections = temp_collections;//otherwise return newly retrieved
+          }
+        }
+        else if(temp_collections.length == 0){
+          return {"status":404};//if no collection retrieved, return custom 404 error
+        }
+        else{
+          collections = temp_collections;//if all okay, return retrieved collections
+        }
         return collections;
       });
     });
@@ -91,7 +102,7 @@ angular.module('collocationdominoes.services', [])
     var suffix_url = TEMPLATE_URL_WITH_ACTIVITY.replace("CCCC",collectionName);
     var coll_url = PREFIX_URL + suffix_url;
 
-    return $http.get(coll_url).then(function(res){
+    return $http.get(coll_url,{timeout:$rootScope.timeout}).then(function(res){
       var x2js = new X2JS();
       var data = x2js.xml_str2json(res.data);
       if(!data || !data.response){return;}
@@ -103,6 +114,8 @@ angular.module('collocationdominoes.services', [])
         //return this collection if not empty
         return collection_name;
       }
+    },function(error){
+      return error;
     });
   }
 
@@ -129,7 +142,7 @@ angular.module('collocationdominoes.services', [])
     var suffix_url = TEMPLATE_URL_WITH_ACTIVITY.replace("CCCC",collectionName);
     var coll_url = PREFIX_URL + suffix_url;
 
-    return $http.get(coll_url).then(function(response){
+    return $http.get(coll_url,{timeout:$rootScope.timeout}).then(function(response){
       var x2js = new X2JS();
       var jsonData = x2js.xml_str2json(response.data);
       // if(!jsonData.response){return;}
@@ -187,7 +200,7 @@ angular.module('collocationdominoes.services', [])
         var params_url = contained_url.substr(contained_url.indexOf("&s1.params"));
         var final_url = PREFIX_URL + middle_url + params_url;
 
-        return $http.get(final_url).then(function(response){
+        return $http.get(final_url,{timeout:$rootScope.timeout}).then(function(response){
           var x2js = new X2JS();
           var jsonData = x2js.xml_str2json(response.data);
           temp_words = jsonData.response.player.word;
@@ -257,6 +270,10 @@ angular.module('collocationdominoes.services', [])
     return "";
   }
 
+  var getTimeoutMsg = function(){
+    return "Request timed out. Try again later!";
+  }
+
   var getErrorMsg = function(){
     return "No Internet connection available!";
   }
@@ -280,6 +297,7 @@ angular.module('collocationdominoes.services', [])
     getExTitle: getExTitle,
     restartEx: restartEx,
 
+    getTimeoutMsg: getTimeoutMsg,
     getErrorMsg: getErrorMsg,
     get404Msg: get404Msg,
     getTitle: getTitle

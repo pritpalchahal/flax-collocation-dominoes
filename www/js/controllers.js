@@ -52,6 +52,10 @@ angular.module('collocationdominoes.controllers', [])
         ionicToast.show(Data.get404Msg(),'middle',true);
         return;
       }
+      if(response && response.status == -1){
+        ionicToast.show(Data.getTimeoutMsg(),'middle',true);
+        return;
+      }
       $scope.collections = response;
       return response;
     }).then(function(res){
@@ -63,7 +67,7 @@ angular.module('collocationdominoes.controllers', [])
     getData(false);
   }
   else{
-    ionicToast.show(Data.getErrorMsg(),'middle',false,2500);
+    ionicToast.show(Data.getErrorMsg(),'bottom',false,2500);
   }
 
   $scope.doRefresh = function(){
@@ -71,7 +75,7 @@ angular.module('collocationdominoes.controllers', [])
       getData(true);
     }
     else{
-      ionicToast.show(Data.getErrorMsg(),'middle',false,2500);
+      ionicToast.show(Data.getErrorMsg(),'bottom',false,2500);
     }
     $scope.$broadcast('scroll.refreshComplete'); 
   };
@@ -146,6 +150,10 @@ angular.module('collocationdominoes.controllers', [])
     Data.getAllEx(collId,isRefreshing).then(function(response){
       if(response.status && response.status == 404){
         ionicToast.show(Data.get404Msg(),'middle',true);
+        return;
+      }
+      if(response && response.status == -1){
+        ionicToast.show(Data.getTimeoutMsg(),'middle',true);
         return;
       }
       $scope.exercises = response;
@@ -287,6 +295,10 @@ angular.module('collocationdominoes.controllers', [])
   Data.getSingleEx(collId,exId).then(function(response){
     if(response.status == 404){
       ionicToast.show(Data.get404Msg(),'middle',true);
+      return;
+    }
+    if(response && response.status == -1){
+      ionicToast.show(Data.getTimeoutMsg(),'middle',true);
       return;
     }
     $scope.words = response;
