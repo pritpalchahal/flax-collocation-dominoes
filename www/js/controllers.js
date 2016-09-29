@@ -369,6 +369,9 @@ angular.module('collocationdominoes.controllers', [])
   }
 
   checkAll = function(){
+    if(!$scope.words || $scope.words.length == 0){
+      return $scope.hide;
+    }
     var correct_words = 0;
     for(var i=0; i<$scope.words.length;i++){
       var word = $scope.words[i];
